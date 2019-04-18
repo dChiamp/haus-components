@@ -1,11 +1,6 @@
 <template>
     <div :class="classes" :style="outerStyles">
-
-        <div
-            v-if="parsedVideoSrc"
-            class="image-sizer"
-            :style="sizerStyles"
-        >
+        <div v-if="parsedVideoSrc" class="image-sizer" :style="sizerStyles">
             <video
                 :src="parsedVideoSrc"
                 @ended="$emit('ended', $event)"
@@ -17,14 +12,13 @@
             />
         </div>
         <div
-            v-else-if="parsedSrc || html"
+            v-else-if="parsedSrc"
             class="image-sizer"
             :style="sizerStyles"
             v-html="innerHtml"
             ref="imageWrap"
         />
         <slot />
-
     </div>
 </template>
 
@@ -40,7 +34,6 @@ export default {
             type: Object,
             default: () => ({})
         },
-        html: String,
         src: String,
         height: [String, Number],
         width: [String, Number],
@@ -54,15 +47,7 @@ export default {
             type: String,
             default: ''
         },
-        'respect-max': {
-            type: Boolean,
-            default: false
-        },
-        'fill-space': {
-            type: Boolean,
-            default: false
-        },
-        fit: {
+        objectFit: {
             type: String,
             default: 'cover'
         },
@@ -181,9 +166,8 @@ export default {
             return [
                 'rsp-image-module',
                 'responsive-image',
-                `fit-${this.fit}`,
+                `fit-${this.objectFit}`,
                 { loading: this.loading },
-                { 'fill-space': this.fillSpace },
                 { 'has-video': this.parsedVideoSrc }
             ]
         },
@@ -192,7 +176,7 @@ export default {
             const fallback = `<img src="${this.parsedSrc}" alt="${
                 this.parsedAlt
             }">`
-            if (this.html) return this.html
+
             return _get(this.targetSize, `html`) || fallback
         },
         innerHtml() {
@@ -207,14 +191,11 @@ export default {
                 this.object.hasOwnProperty('modified')
             )
         },
+        mediaMeta() {
+            return _get(this.object, 'mediaDetails.meta', {})
+        },
         outerStyles() {
             const styles = {}
-
-            // set max dims if needed
-            if (this['respect-max']) {
-                styles['max-width'] = `${this.parsedWidth}px`
-                styles['max-height'] = `${this.parsedHeight}px`
-            }
 
             // add color bg if needed
             if (
@@ -223,12 +204,12 @@ export default {
                 this.loading
             ) {
                 // set color or SVG background depending on settings
-                if (this.fit == 'cover')
+                if (this.objectFit == 'cover')
                     styles['background-color'] = this.parsedColor
                 else styles['background-image'] = `url("${this.svgBG}")`
 
                 // set fit
-                styles['background-size'] = this.fit
+                styles['background-size'] = this.objectFit
             }
 
             return styles
@@ -266,9 +247,11 @@ export default {
                 return _get(this, 'object.sizes.fullscreen', '')
             }
 
-            return _get(this.targetSize, `url`)
+            // return _get(this.targetSize, `url`)
+            return this.object.sourceUrl
         },
         parsedVideoSrc() {
+            // TODO: Add support for videos from meta
             const metaString =
                 _get(this.object, 'meta.custom_video_url') ||
                 _get(this.object, 'alt', '')
@@ -288,19 +271,6 @@ export default {
             }
             return {}
         },
-        svgBG() {
-            if (!this.parsedColor || this.parsedColor == 'transparent')
-                return ''
-            return `data:image/svg+xml;utf8,
-                    <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'
-                        x='0px' y='0px' viewBox='0 0 ${this.imageWidth} ${
-                this.imageHeight
-            }' xml:space='preserve'>
-                        <rect fill='${this.parsedColor}' width='${
-                this.imageWidth
-            }' height='${this.imageHeight}' />
-                    </svg>`.replace(/\r?\n|\r/g, '')
-        },
         targetSize() {
             // should return an object with { height, html, url, width }
 
@@ -314,12 +284,17 @@ export default {
             }
 
             // get sizes from image object
-            const sizes = _get(this.object, `sizes`, {})
+            const sizes = _get(this.object, `mediaDetails`, {})
+
+            // this.imageWidth = sizes.width
+            // this.imageHeight = sizes.height
 
             // get specified size, or first available size
-            return (
-                _get(sizes, this.size) || sizes[_get(Object.keys(sizes), '[0]')]
-            )
+            // return (
+            //     _get(sizes, this.size) || sizes[_get(Object.keys(sizes), '[0]')]
+            // )
+
+            return sizes
         }
     }
 }
@@ -350,21 +325,6 @@ export default {
     // when set to contain
     &.fit-contain .image-sizer > * {
         object-fit: contain;
-    }
-
-    // fill-space state
-    &.fill-space {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        top: 0;
-    }
-    &.fill-space .image-sizer {
-        height: 100%;
-        width: 100%;
-        left: 0;
-        top: 0;
     }
 
     // loading state
