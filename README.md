@@ -1,3 +1,5 @@
+_NOTE: THIS IS CURRENTLY A BIG WORK IN PROGRESS_
+
 Reusable components and directives for Vue. Designed for [Stackhaus](https://github.com/funkhaus/stackhaus) - a Graph QL powered frontend tech stack built on Nuxt, using Apollo.
 
 `haus-components` saves you the trouble of rewriting common components like images, video players, svgs, and several other elements. If you're looking at writing a custom component, check if one already exists here first - and if it doesn't, feel free to [contribute](#contributing)!
