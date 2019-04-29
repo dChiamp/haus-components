@@ -18,5 +18,4 @@ Reusable components and directives for Vue. Designed for [Stackhaus](https://git
 
 TODO improvements:
 
-- The slideshow-list component on MPC is the base of a really good background slideshow. Adapt that into haus-components
-- ;nd;lks
+1.  The slideshow-list component on MPC is the base of a really good background slideshow. Adapt that into haus-components. Need to make it more generic, with slots probably.
