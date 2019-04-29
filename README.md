@@ -18,4 +18,7 @@ Reusable components and directives for Vue. Designed for [Stackhaus](https://git
 
 TODO improvements:
 
-1.  The slideshow-list component on MPC is the base of a really good background slideshow. Adapt that into haus-components. Need to make it more generic, with slots probably.
+1.  Improve documentation
+1.  Add Storybook UI to this
+1.  Make this an NPM module?
+1.  The slideshow-list component on MPC is the base of a really good background slideshow. Add that to this. Need to make it more generic, with slots probably.
