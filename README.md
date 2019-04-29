@@ -8,7 +8,15 @@ Reusable components and directives for Vue. Designed for [Stackhaus](https://git
 
 1.  [Installation](#installation)
 1.  [Components](#components)
+
     1.  [smart-link](#smart-link)
     1.  [responsive-image](#responsive-image)
     1.  [wp-content](#wp-content)
     1.  [split-text](#wp-content)
+
+## TODO list
+
+TODO improvements:
+
+- The slideshow-list component on MPC is the base of a really good background slideshow. Adapt that into haus-components
+- ;nd;lks
