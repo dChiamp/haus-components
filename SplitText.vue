@@ -1,8 +1,7 @@
-<template functional>
+<template>
   <component :is="element">
-    <component
-      is="span"
-      v-for="(line, i) in props.text.split(props.separator)"
+    <span
+      v-for="(line, i) in lines"
       :key="i"
       :class="['line', `line-${i + 1}`]"
       v-html="line"
@@ -24,6 +23,11 @@ export default {
     element: {
       type: String,
       default: "span"
+    }
+  },
+  computed: {
+    lines() {
+      return this.text.split(this.separator);
     }
   }
 };
