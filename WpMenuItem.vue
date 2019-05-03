@@ -29,11 +29,13 @@ export default {
       type: Object,
       default: () => {}
     },
-    pathSplice: {
-      type: Object,
-      default() {
-        return { from: 0, to: 99 };
-      }
+    pathSpliceFrom: {
+      type: [Number, Boolean],
+      default: false
+    },
+    pathSpliceTo: {
+      type: [Number, Boolean],
+      default: false
     }
   },
   computed: {
@@ -59,13 +61,18 @@ export default {
       return this.item.url.replace(this.$store.state.apiUrl, "");
     },
     getPath() {
-      // Only use if isRealtive is true in template
-      let chunks = this.relativeUrl.split("/");
+      let url = this.relativeUrl;
 
-      // Remove empty strings
-      chunks = chunks.filter(Boolean);
-      let se;
-      return chunks.splice(this.pathSplice.from, this.pathSplice.to).join("/");
+      if (this.pathSpliceFrom && this.pathSpliceTo) {
+        // Only use if isRealtive is true in template
+        let chunks = url.split("/");
+
+        // Remove empty strings
+        chunks = chunks.filter(Boolean);
+        url = chunks.splice(this.pathSpliceFrom, this.pathSpliceTo).join("/");
+      }
+
+      return url;
     }
   },
   methods: {

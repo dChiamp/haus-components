@@ -5,7 +5,9 @@
       :key="i"
       class="menu-item"
       :item="item"
-      :path-splice="pathSplice"
+      :path-splice-to="pathSpliceTo"
+      :path-splice-from="pathSpliceFrom"
+      @interacted="menuInteraction();"
     />
   </ul>
 </template>
@@ -24,11 +26,13 @@ export default {
       type: Array,
       default: () => []
     },
-    pathSplice: {
-      type: Object,
-      default() {
-        return { from: 0, to: 99 };
-      }
+    pathSpliceFrom: {
+      type: [Number, Boolean],
+      default: false
+    },
+    pathSpliceTo: {
+      type: [Number, Boolean],
+      default: false
     }
   },
   computed: {
@@ -51,15 +55,6 @@ export default {
     }
   },
   methods: {
-    getUrl(url) {
-      let relativeUrl = this.makeUrlRelative(url);
-      let chunks = relativeUrl.split("/");
-
-      return chunks.splice(0, this.urlDepth).join("/");
-    },
-    makeUrlRelative(url) {
-      return url.replace(this.$store.state.apiUrl, "");
-    },
     menuInteraction() {
       this.$emit("interacted");
     }
