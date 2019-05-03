@@ -1,26 +1,12 @@
 <template>
   <ul :class="classes">
-    <li v-for="(item, i) in menuItems" :key="i" class="menu-item">
-      <nuxt-link
-        :to="makeUrlRelative(item.url)"
-        @click.native="menuInteraction"
-        v-html="item.label"
-      />
-
-      <ul v-if="item.childItems.nodes.length" class="sub-menu">
-        <li
-          v-for="(subItem, i) in item.childItems.nodes"
-          :key="`sub-${i}`"
-          class="sub-item menu-item"
-        >
-          <nuxt-link
-            :to="makeUrlRelative(subItem.url)"
-            @click.native="menuInteraction"
-            v-html="subItem.label"
-          />
-        </li>
-      </ul>
-    </li>
+    <wp-menu-item
+      v-for="(item, i) in menuItems"
+      :key="i"
+      class="menu-item"
+      :item="item"
+      :path-splice="pathSplice"
+    />
   </ul>
 </template>
 
@@ -32,8 +18,17 @@ export default {
   props: {
     locationName: {
       type: String,
-      default: "",
-      required: true
+      default: ""
+    },
+    items: {
+      type: Array,
+      default: () => []
+    },
+    pathSplice: {
+      type: Object,
+      default() {
+        return { from: 0, to: 99 };
+      }
     }
   },
   computed: {
@@ -41,14 +36,27 @@ export default {
       return ["wp-menu", `location-${_kebabCase(this.locationName)}`];
     },
     menuItems() {
-      return _get(
-        this,
-        `$store.state.menus.locations.${this.locationName}`,
-        []
-      );
+      let items = this.items;
+
+      // Use menu from store if name provided
+      if (this.locationName) {
+        items = _get(
+          this,
+          `$store.state.menus.locations.${this.locationName}`,
+          []
+        );
+      }
+
+      return items;
     }
   },
   methods: {
+    getUrl(url) {
+      let relativeUrl = this.makeUrlRelative(url);
+      let chunks = relativeUrl.split("/");
+
+      return chunks.splice(0, this.urlDepth).join("/");
+    },
     makeUrlRelative(url) {
       return url.replace(this.$store.state.apiUrl, "");
     },
