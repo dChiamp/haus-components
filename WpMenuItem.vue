@@ -4,18 +4,29 @@
       v-if="!isRelative"
       target="_blank"
       :href="item.url"
-      @click.native="menuInteraction();"
+      @click.native="menuInteracted"
       v-html="item.label"
     />
 
     <nuxt-link
       v-if="isRelative"
       :to="getPath"
-      @click.native="menuInteraction();"
+      @click.native="menuInteracted"
       v-html="item.label"
     />
 
-    <wp-menu v-if="hasSubMenu" class="sub-menu" :items="getChildren" />
+    <!-- TODO Make prop for sub-menus to be drop downs -->
+    <ul v-if="hasSubMenu" class="sub-menu">
+      <wp-menu-item
+        v-for="(subItem, i) in getChildren"
+        :key="`sub-${i}`"
+        class="menu-item sub-menu-item"
+        :item="subItem"
+        :path-splice-to="pathSpliceTo"
+        :path-splice-from="pathSpliceFrom"
+        @menu-interacted="menuInteracted();"
+      />
+    </ul>
   </li>
 </template>
 
@@ -76,8 +87,8 @@ export default {
     }
   },
   methods: {
-    menuInteraction() {
-      this.$emit("interacted");
+    menuInteracted(event) {
+      this.$emit("menu-interacted", event);
     }
   }
 };

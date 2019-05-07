@@ -7,7 +7,7 @@
       :item="item"
       :path-splice-to="pathSpliceTo"
       :path-splice-from="pathSpliceFrom"
-      @interacted="menuInteraction();"
+      @menu-interacted="menuInteracted();"
     />
   </ul>
 </template>
@@ -55,8 +55,8 @@ export default {
     }
   },
   methods: {
-    menuInteraction() {
-      this.$emit("interacted");
+    menuInteracted(event) {
+      this.$emit("menu-interacted", event);
     }
   }
 };
