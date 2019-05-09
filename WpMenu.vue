@@ -5,6 +5,7 @@
       :key="i"
       class="menu-item"
       :item="item"
+      :prepend-paths="prependPaths"
       @menu-interacted="menuInteracted();"
     />
   </ul>
@@ -23,6 +24,10 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    prependPaths: {
+      type: String,
+      default: ""
     }
   },
   computed: {

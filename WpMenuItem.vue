@@ -23,6 +23,7 @@
         class="menu-item sub-menu-item"
         :item="subItem"
         @menu-interacted="menuInteracted();"
+        :prepend-paths="prependPaths"
       />
     </ul>
   </li>
@@ -37,6 +38,10 @@ export default {
     item: {
       type: Object,
       default: () => {}
+    },
+    prependPaths: {
+      type: String,
+      default: ""
     }
   },
   computed: {
@@ -62,7 +67,7 @@ export default {
       return this.item.url.replace(this.$store.state.apiUrl, "");
     },
     getPath() {
-      return this.relativeUrl;
+      return `${this.prependPaths}${this.relativeUrl}`;
     }
   },
   methods: {
