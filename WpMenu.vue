@@ -5,8 +5,6 @@
       :key="i"
       class="menu-item"
       :item="item"
-      :path-splice-to="pathSpliceTo"
-      :path-splice-from="pathSpliceFrom"
       @menu-interacted="menuInteracted();"
     />
   </ul>
@@ -25,14 +23,6 @@ export default {
     items: {
       type: Array,
       default: () => []
-    },
-    pathSpliceFrom: {
-      type: [Number, Boolean],
-      default: false
-    },
-    pathSpliceTo: {
-      type: [Number, Boolean],
-      default: false
     }
   },
   computed: {
