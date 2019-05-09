@@ -1,5 +1,5 @@
 <template>
-  <nuxt-link v-if="isRelative" class="smart-link" :to="parsedTo">
+  <nuxt-link v-if="isRelative || isInternal" class="smart-link" :to="parsedTo">
     <slot />
   </nuxt-link>
 
@@ -11,8 +11,6 @@
 </template>
 
 <script>
-import config from "~/nuxt.config";
-
 export default {
   props: {
     to: {
@@ -30,16 +28,10 @@ export default {
   },
   computed: {
     apiUrl() {
-      let url = "";
-      if (config.hasOwnProperty("apollo")) {
-        // Get the backend URL from Apollo, and remove the Grapgh QL part
-        url = config.apollo.clientConfigs.default.httpEndpoint.replace(
-          "/graphql",
-          ""
-        );
-      }
-
-      return url;
+      return this.$store.state.apiUrl || "";
+    },
+    isInternal() {
+      return this.to.includes(this.apiUrl);
     },
     isRelative() {
       let result = false;
