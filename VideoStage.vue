@@ -1,26 +1,59 @@
 <template>
-  <div class="video-stage">
+  <div :class="classes">
     <iframe
+      ref="iframe"
       class="iframe"
       :src="iFrameSrc"
-      width="1280"
-      height="720"
+      :width="width"
+      :height="height"
       frameborder="0"
       allow="autoplay; fullscreen"
       allowfullscreen
+      :playsinline.boolean="playsinline"
+      :title="title"
     />
   </div>
 </template>
 
 <script>
+import Player from "@vimeo/player";
+
 export default {
   props: {
     src: {
       type: String,
       default: ""
+    },
+    playsinline: {
+      type: Boolean,
+      default: true
+    },
+    autoplay: {
+      type: Boolean,
+      default: true
+    },
+    color: {
+      type: String,
+      default: "ffffff"
+    },
+    muted: {
+      type: Boolean,
+      default: false
     }
   },
+  data() {
+    return {
+      player: null,
+      hasLoaded: false,
+      height: 720,
+      width: 1280,
+      title: ""
+    };
+  },
   computed: {
+    classes() {
+      return ["video-stage", { "has-loaded": this.hasLoaded }];
+    },
     isIframe() {
       return String(this.src).includes("<iframe");
     },
@@ -37,27 +70,60 @@ export default {
         );
       }
 
-      return url;
+      // Build out base props
+      return `${url}?byline=0&portrait=0&autoplay=${
+        this.autoplay
+      }&playsinline=${this.playsinline}&color=${this.color}`;
     }
   },
+  mounted() {
+    this.initVimeoPlayer();
+  },
+  beforeDestroy() {
+    this.destroyVimeoPlayer();
+  },
   methods: {
-    // async fetchOembed() {
-    //     let html = ""
-    //
-    //     switch (true) {
-    //         case this.isVimeo:
-    //             this.loadingEmbed = true
-    //             const base = "https://vimeo.com/api/oembed.json"
-    //             const encoded = encodeURIComponent(this.src)
-    //             const response = await fetch(`${base}?url=${encoded}`).then(
-    //                 r => r.json()
-    //             )
-    //             this.loadingEmbed = false
-    //             html = response && response.html ? response.html : ""
-    //             break
-    //     }
-    //     return html
-    // }
+    onPlay() {
+      this.$emit("play", ...arguments);
+    },
+    onPause() {
+      this.$emit("pause", ...arguments);
+    },
+    onEnded() {
+      this.$emit("ended", ...arguments);
+    },
+    async initVimeoPlayer() {
+      // init player
+      this.player = new Player(this.$refs.iframe, {
+        muted: this.muted,
+        playsinline: this.playsinline
+      });
+
+      // Set loaded class when player is ready
+      await this.player.ready().then((this.hasLoaded = true));
+
+      // Set Attributes
+      this.player.getVideoWidth().then(width => {
+        this.width = width;
+      });
+      this.player.getVideoHeight().then(height => {
+        this.width = height;
+      });
+      this.player.getVideoTitle().then(title => {
+        this.title = title;
+      });
+
+      // Set events
+      this.player.on("play", this.onPlay);
+      this.player.on("pause", this.onPause);
+      this.player.on("ended", this.onEnded);
+    },
+    destroyVimeoPlayer() {
+      // Remove events
+      this.player.off("play", this.onPlay);
+      this.player.off("pause", this.onPause);
+      this.player.off("ended", this.onEnded);
+    }
   }
 };
 </script>
@@ -72,7 +138,13 @@ export default {
     left: 0;
     height: 100%;
     width: 100%;
-    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+
+  // Loaded state
+  &.has-loaded .iframe {
+    opacity: 1;
   }
 }
 </style>
