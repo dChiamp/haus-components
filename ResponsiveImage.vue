@@ -26,6 +26,8 @@
 
 <script>
 import Vue from "vue";
+import _get from "lodash/get";
+
 export default {
   props: {
     image: {
@@ -100,10 +102,10 @@ export default {
       return this.src || this.image.sourceUrl;
     },
     parsedColor() {
-      return this.color || this.image.acfImageMeta.primaryColor;
+      return this.color || _get(this, "image.acfImageMeta.primaryColor", "");
     },
     parsedVideoUrl() {
-      return this.videoUrl || this.image.acfImageMeta.videoUrl;
+      return this.videoUrl || _get(this, "image.acfImageMeta.videoUrl", "");
     },
     sizerStyles() {
       let styles = {};
