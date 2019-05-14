@@ -3,10 +3,21 @@
     <div class="sizer" :style="sizerStyles">
       <img
         v-if="parsedSrc"
-        class="image"
+        class="media image"
         :src="parsedSrc"
-        :style="imgStyles"
-        @load="setLoaded();"
+        :style="mediaStyles"
+        @load="setLoaded('image');"
+      />
+      <video
+        v-if="parsedVideoUrl"
+        class="media video"
+        :src="parsedVideoUrl"
+        :style="mediaStyles"
+        :poster="parsedSrc"
+        loop
+        autoplay
+        muted
+        @canplay="setLoaded('video');"
       />
     </div>
     <slot />
@@ -14,6 +25,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 export default {
   props: {
     image: {
@@ -47,11 +59,15 @@ export default {
     backgroundColor: {
       type: String,
       default: ""
+    },
+    videoUrl: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
-      imageLoaded: false
+      loadedStatus: {}
     };
   },
   computed: {
@@ -59,7 +75,7 @@ export default {
       return [
         "responsive-image",
         `mode-${this.mode}`,
-        { "has-loaded": this.imageLoaded },
+        { "has-loaded": this.hasLoaded },
         { "has-background-color": this.backgroundColor }
       ];
     },
@@ -83,6 +99,12 @@ export default {
     parsedSrc() {
       return this.src || this.image.sourceUrl;
     },
+    parsedColor() {
+      return this.color || this.image.acfImageMeta.primaryColor;
+    },
+    parsedVideoUrl() {
+      return this.videoUrl || this.image.acfImageMeta.videoUrl;
+    },
     sizerStyles() {
       let styles = {};
 
@@ -94,23 +116,50 @@ export default {
       }
 
       // Set background color
-      if (this.backgroundColor) {
+      if (this.parsedColor) {
         styles = {
-          backgroundColor: `${this.backgroundColor}`
+          backgroundColor: `${this.parsedColor}`
         };
       }
 
       return styles;
     },
-    imgStyles() {
+    mediaStyles() {
       return {
         objectFit: this.objectFit
       };
+    },
+    hasLoaded() {
+      // Handle if we have a video and an image
+      return Object.values(this.loadedStatus).every(Boolean);
+    }
+  },
+  watch: {
+    // Update loaded state if new src set
+    parsedVideoUrl(newVal, oldVal) {
+      if (newVal) {
+        Vue.set(this.loadedStatus, "video", false);
+      }
+    },
+    // Update loaded state if new src set
+    parsedSrc(newVal, oldVal) {
+      if (newVal) {
+        Vue.set(this.loadedStatus, "image", false);
+      }
+    }
+  },
+  mounted() {
+    // Setup loaded state tracking
+    if (this.parsedVideoUrl) {
+      Vue.set(this.loadedStatus, "video", false);
+    }
+    if (this.parsedSrc) {
+      Vue.set(this.loadedStatus, "image", false);
     }
   },
   methods: {
-    setLoaded() {
-      this.imageLoaded = true;
+    setLoaded(type) {
+      Vue.set(this.loadedStatus, type, true);
     }
   }
 };
@@ -122,16 +171,19 @@ export default {
 
   .sizer {
     position: relative;
-
-    .image {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      transition: opacity 0.4s ease-in-out;
-    }
+  }
+  .media {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    z-index: 10;
+  }
+  .video {
+    z-index: 20;
   }
 
   // Modes
@@ -146,7 +198,7 @@ export default {
   }
 
   // Loaded state
-  &.has-loaded .image {
+  &.has-loaded .media {
     opacity: 1;
   }
 }
