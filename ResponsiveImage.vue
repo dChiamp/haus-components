@@ -17,7 +17,7 @@
         loop
         autoplay
         muted
-        @canplay="setLoaded('video');"
+        @loadeddata="setLoaded('video');"
       />
     </div>
     <slot />
@@ -69,7 +69,9 @@ export default {
   },
   data() {
     return {
-      loadedStatus: {}
+      loadedStatus: {
+        booted: false
+      }
     };
   },
   computed: {
@@ -112,16 +114,12 @@ export default {
 
       // Set padding for size
       if (this.mode == "intrinsic-ratio") {
-        styles = {
-          paddingBottom: `${this.aspectPadding}%`
-        };
+        styles.paddingBottom = `${this.aspectPadding}%`;
       }
 
       // Set background color
       if (this.parsedColor) {
-        styles = {
-          backgroundColor: `${this.parsedColor}`
-        };
+        styles.backgroundColor = `${this.parsedColor}`;
       }
 
       return styles;
@@ -132,7 +130,7 @@ export default {
       };
     },
     hasLoaded() {
-      // Handle if we have a video and an image
+      // Check if all are true. To handle if we have a video and an image.
       return Object.values(this.loadedStatus).every(Boolean);
     }
   },
@@ -158,6 +156,9 @@ export default {
     if (this.parsedSrc) {
       Vue.set(this.loadedStatus, "image", false);
     }
+
+    // Set the booted flag
+    Vue.set(this.loadedStatus, "booted", true);
   },
   methods: {
     setLoaded(type) {
