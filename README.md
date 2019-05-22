@@ -24,4 +24,4 @@ TODO improvements:
 1.  Make this an NPM module?
 1.  The slideshow-list component on MPC is the base of a really good background slideshow. Add that to this. Need to make it more generic, with slots probably.
 1.  Get ESLINT working on this repo. Spacing is all wrong.
-1.  Make WP Menu more robust. Probabley needs a `wp-menu-item` and to work with external links.
+1.  Get v-in-view working if it loads in browser view.

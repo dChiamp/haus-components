@@ -1,56 +1,50 @@
 <template>
-
-    <component
-        :is="element"
-        v-text="displayNumber"
-    />
-
+  <component :is="element" v-text="displayNumber" />
 </template>
 
 <script>
-
-import { tween } from 'popmotion'
+import { tween } from "popmotion";
 
 export default {
-    props: {
-        from: {
-            type: Number,
-            default: 0
-        },
-        to: {
-            type: Number,
-            required: true
-        },
-        //duration is in milliseconds
-        duration: {
-            type: Number,
-            required: false,
-            default: 1000
-        },
-        element: {
-            type: String,
-            default: 'div'
-        },
-        startCount: {
-            type: Boolean,
-            required: true
-        }
+  props: {
+    from: {
+      type: Number,
+      default: 0
     },
-    data() {
-        return {
-            displayNumber: this.from
-        }
+    to: {
+      type: Number,
+      required: true
     },
-    watch: {
-        startCount(newVal) {
-            if (newVal) {
-                tween({
-                    to: this.to,
-                    from: this.from,
-                    duration: this.duration
-                }).pipe(parseInt).start(val => this.displayNumber = val)
-            }
-        }
+    duration: {
+      type: Number,
+      default: 1000 // Duration is in milliseconds
+    },
+    element: {
+      type: String,
+      default: "div"
+    },
+    startCount: {
+      type: Boolean,
+      required: true
     }
-}
+  },
+  data() {
+    return {
+      displayNumber: this.from
+    };
+  },
+  watch: {
+    startCount(newVal) {
+      if (newVal) {
+        tween({
+          to: this.to,
+          from: this.from,
+          duration: this.duration
+        })
+          .pipe(parseInt)
+          .start(val => (this.displayNumber = val));
+      }
+    }
+  }
+};
 </script>
