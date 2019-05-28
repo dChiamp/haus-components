@@ -10,13 +10,15 @@
       />
       <video
         v-if="parsedVideoUrl"
+        ref="video"
         class="media video"
         :src="parsedVideoUrl"
         :style="mediaStyles"
         :poster="parsedSrc"
-        loop
-        autoplay
-        muted
+        :loop="loop"
+        :autoplay="autoplay"
+        :muted="muted"
+        :playsinline="playsinline"
         @loadeddata="setLoaded('video');"
       />
     </div>
@@ -65,6 +67,22 @@ export default {
     videoUrl: {
       type: String,
       default: ""
+    },
+    loop: {
+      type: Boolean,
+      default: true
+    },
+    autoplay: {
+      type: Boolean,
+      default: true
+    },
+    muted: {
+      type: Boolean,
+      default: true
+    },
+    playsinline: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -163,6 +181,18 @@ export default {
   methods: {
     setLoaded(type) {
       Vue.set(this.loadedStatus, type, true);
+    },
+    play() {
+      // HTML5 video methods
+      if (this.$refs.video) {
+        this.$refs.video.play();
+      }
+    },
+    pause() {
+      // HTML5 video methods
+      if (this.$refs.video) {
+        this.$refs.video.pause();
+      }
     }
   }
 };

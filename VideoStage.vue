@@ -9,7 +9,7 @@
       frameborder="0"
       allow="autoplay; fullscreen"
       allowfullscreen
-      :playsinline.boolean="playsinline"
+      :playsinline="playsinline"
       :title="title"
     />
   </div>
