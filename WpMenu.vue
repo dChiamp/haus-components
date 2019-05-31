@@ -1,5 +1,7 @@
 <template>
   <ul :class="classes">
+    <slot name="before" />
+
     <wp-menu-item
       v-for="(item, i) in menuItems"
       :key="i"
@@ -8,6 +10,8 @@
       :prepend-paths="prependPaths"
       @menu-interacted="menuInteracted();"
     />
+
+    <slot name="after" />
   </ul>
 </template>
 

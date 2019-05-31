@@ -145,6 +145,7 @@ export default {
         this.player.on("ended", this.onEnded);
 
         this.hasLoaded = true;
+        this.$emit("has-loaded");
       });
     },
     destroyVimeoPlayer() {
