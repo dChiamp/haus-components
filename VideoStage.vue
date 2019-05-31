@@ -168,7 +168,7 @@ export default {
       let $stage = this.$refs.stage;
       let heightOffset = 0;
 
-      // Return if no stage
+      // Abort if no stage
       if (!$stage) {
         return false;
       }
