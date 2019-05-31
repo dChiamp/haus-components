@@ -99,12 +99,6 @@ export default {
       }&playsinline=${this.playsinline}&color=${this.color}`;
     }
   },
-  watch: {
-    hasLoaded() {
-      // Size video when video is loaded
-      Vue.nextTick(this.sizeVideo);
-    }
-  },
   mounted() {
     this.initVimeoPlayer();
     window.addEventListener("resize", this.sizeVideo);
@@ -141,14 +135,16 @@ export default {
         this.title = title;
       });
 
-      // Set loaded class when player is ready and sized
+      // Size, set events and loaded state
       await this.player.ready().then(() => {
-        this.hasLoaded = true;
+        Vue.nextTick(this.sizeVideo);
 
         // Set events
         this.player.on("play", this.onPlay);
         this.player.on("pause", this.onPause);
         this.player.on("ended", this.onEnded);
+
+        this.hasLoaded = true;
       });
     },
     destroyVimeoPlayer() {
