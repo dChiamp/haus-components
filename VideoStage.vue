@@ -1,5 +1,7 @@
 <template>
-  <div :class="classes">
+  <div ref="stage" :class="classes">
+    <slot name="top" />
+
     <iframe
       ref="iframe"
       class="iframe"
@@ -11,12 +13,17 @@
       allowfullscreen
       :playsinline="playsinline"
       :title="title"
+      :style="iframeStyles"
     />
+
+    <slot name="bottom" />
   </div>
 </template>
 
 <script>
+import Vue from "vue";
 import Player from "@vimeo/player";
+import { cover, contain } from "intrinsic-scale";
 
 export default {
   props: {
@@ -39,6 +46,10 @@ export default {
     muted: {
       type: Boolean,
       default: false
+    },
+    mode: {
+      type: String,
+      default: "css"
     }
   },
   data() {
@@ -47,12 +58,24 @@ export default {
       hasLoaded: false,
       height: 720,
       width: 1280,
+      styleHeight: "",
+      styleWidth: "",
       title: ""
     };
   },
   computed: {
     classes() {
-      return ["video-stage", { "has-loaded": this.hasLoaded }];
+      return [
+        "video-stage",
+        { "has-loaded": this.hasLoaded },
+        `mode-${this.mode}`
+      ];
+    },
+    iframeStyles() {
+      return {
+        height: `${this.styleHeight}px`,
+        width: `${this.styleWidth}px`
+      };
     },
     isIframe() {
       return String(this.src).includes("<iframe");
@@ -76,11 +99,19 @@ export default {
       }&playsinline=${this.playsinline}&color=${this.color}`;
     }
   },
+  watch: {
+    hasLoaded() {
+      // Size video when video is loaded
+      Vue.nextTick(this.sizeVideo);
+    }
+  },
   mounted() {
     this.initVimeoPlayer();
+    window.addEventListener("resize", this.sizeVideo);
   },
   beforeDestroy() {
     this.destroyVimeoPlayer();
+    window.addEventListener("resize", this.sizeVideo);
   },
   methods: {
     onPlay() {
@@ -99,30 +130,71 @@ export default {
         playsinline: this.playsinline
       });
 
-      // Set loaded class when player is ready
-      await this.player.ready().then((this.hasLoaded = true));
-
       // Set Attributes
-      this.player.getVideoWidth().then(width => {
+      await this.player.getVideoWidth().then(width => {
         this.width = width;
       });
-      this.player.getVideoHeight().then(height => {
-        this.width = height;
+      await this.player.getVideoHeight().then(height => {
+        this.height = height;
       });
-      this.player.getVideoTitle().then(title => {
+      await this.player.getVideoTitle().then(title => {
         this.title = title;
       });
 
-      // Set events
-      this.player.on("play", this.onPlay);
-      this.player.on("pause", this.onPause);
-      this.player.on("ended", this.onEnded);
+      // Set loaded class when player is ready and sized
+      await this.player.ready().then(() => {
+        this.hasLoaded = true;
+
+        // Set events
+        this.player.on("play", this.onPlay);
+        this.player.on("pause", this.onPause);
+        this.player.on("ended", this.onEnded);
+      });
     },
     destroyVimeoPlayer() {
       // Remove events
-      this.player.off("play", this.onPlay);
-      this.player.off("pause", this.onPause);
-      this.player.off("ended", this.onEnded);
+      if (this.player) {
+        this.player.off("play", this.onPlay);
+        this.player.off("pause", this.onPause);
+        this.player.off("ended", this.onEnded);
+      }
+    },
+    sizeVideo() {
+      // Abort if mode not "fit-to-parent"
+      if (this.mode !== "fit-to-parent") {
+        return false;
+      }
+
+      let $stage = this.$refs.stage;
+      let heightOffset = 0;
+
+      // Return if no stage
+      if (!$stage) {
+        return false;
+      }
+
+      // Total height of all slot elements (only if auto is true)
+      heightOffset = Object.keys(this.$slots).reduce((acc, key) => {
+        const slotItems = this.$slots[key] || [];
+        const slotHeight = slotItems.reduce((acc, item) => {
+          const rect = item.elm.getBoundingClientRect();
+          const height = rect.height || 0;
+          return acc + height;
+        }, 0);
+        return slotHeight;
+      }, 0);
+
+      // Figure out "contain" height and set it on video
+      let { width, height, x, y } = contain(
+        $stage.offsetWidth,
+        $stage.offsetHeight + heightOffset,
+        this.width,
+        this.height
+      );
+
+      // Set style heights
+      this.styleHeight = height;
+      this.styleWidth = width;
     }
   }
 };
@@ -133,11 +205,6 @@ export default {
   position: relative;
 
   .iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
   }
@@ -145,6 +212,15 @@ export default {
   // Loaded state
   &.has-loaded .iframe {
     opacity: 1;
+  }
+
+  // Sizing modes
+  &.mode-css {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
   }
 }
 </style>
