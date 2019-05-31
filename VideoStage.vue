@@ -212,7 +212,7 @@ export default {
   }
 
   // Sizing modes
-  &.mode-css {
+  &.mode-css .iframe {
     position: absolute;
     top: 0;
     left: 0;
