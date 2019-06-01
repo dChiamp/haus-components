@@ -74,9 +74,7 @@ export default {
   },
   render(h) {
     return h({
-      template: `<div ref="content" class="wp-content">${
-        this.htmlTemplate
-      }</div>`
+      template: `<div class="wp-content">${this.htmlTemplate}</div>`
     });
   }
 };
