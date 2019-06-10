@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import _get from "lodash/get";
+
 export default {
   props: {
     to: {
@@ -51,7 +53,8 @@ export default {
       return result;
     },
     parsedTo() {
-      return this.to.replace(this.apiUrl, "");
+      let host = _get(this, "$store.state.siteMeta.host", "");
+      return this.to.replace(this.apiUrl, "").replace(host, "");
     }
   }
 };

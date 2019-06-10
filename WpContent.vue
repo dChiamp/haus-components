@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     htmlTemplate() {
-      return this.html;
+      return this.html || "";
     }
   },
   watch: {

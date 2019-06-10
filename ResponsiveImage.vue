@@ -200,8 +200,6 @@ export default {
 
 <style lang="scss">
 .responsive-image {
-  position: relative;
-
   .sizer {
     position: relative;
   }
@@ -220,6 +218,9 @@ export default {
   }
 
   // Modes
+  &.mode-intrinsic-ratio {
+    position: relative;
+  }
   &.mode-fullbleed {
     .sizer {
       width: 100%;
