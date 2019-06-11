@@ -30,7 +30,9 @@ export default {
   },
   computed: {
     apiUrl() {
-      return this.$store.state.apiUrl || "";
+      return (
+        this.$store.state.siteMeta.apiUrl || this.$store.state.apiUrl || ""
+      );
     },
     isInternal() {
       return this.to.includes(this.apiUrl);
