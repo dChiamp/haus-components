@@ -31,6 +31,7 @@ export default {
   computed: {
     apiUrl() {
       return (
+        // I have both these URLs for backwards compatibility. Could remove second one soon.
         this.$store.state.siteMeta.apiUrl || this.$store.state.apiUrl || ""
       );
     },

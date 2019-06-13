@@ -64,7 +64,7 @@ export default {
       return this.item.target !== "_blank";
     },
     relativeUrl() {
-      return this.item.url.replace(this.$store.state.apiUrl, "");
+      return this.item.url.replace(this.$store.state.siteMeta.apiUrl, "");
     },
     getPath() {
       return `${this.prependPaths}${this.relativeUrl}`;
