@@ -1,0 +1,19 @@
+{
+    "name": "haus-components",
+    "version": "1.0.0",
+    "description": " Reusable components for stackhaus .",
+    "author": "Funkhaus",
+    "license": "ISC",
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/funkhaus/haus-components.git"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "eslint": "^5.16.0",
+        "eslint-plugin-vue": "^5.2.2",
+        "prettier": "^1.18.2",
+        "prettier-eslint": "^9.0.0"
+    }
+}

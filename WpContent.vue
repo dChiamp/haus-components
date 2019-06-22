@@ -14,7 +14,7 @@ export default {
                 'iframe[src*="vimeo.com"]',
                 'iframe[src*="youtube.com"]',
                 'iframe[src*="soundcloud.com"]',
-                'iframe.fit-vid'
+                "iframe.fit-vid"
             ]
         },
         unwrap: {
@@ -24,11 +24,13 @@ export default {
     },
     computed: {
         htmlTemplate() {
-            return sanitizeHtml(this.html, {
-                allowedTags: false,
-                allowedAttributes: false,
-                allowedIframeHostnames: false
-            }) || ""
+            return (
+                sanitizeHtml(this.html, {
+                    allowedTags: false,
+                    allowedAttributes: false,
+                    allowedIframeHostnames: false
+                }) || ""
+            )
         }
     },
     watch: {

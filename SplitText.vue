@@ -1,34 +1,34 @@
 <template>
-  <component :is="element">
-    <span
-      v-for="(line, i) in lines"
-      :key="i"
-      :class="['line', `line-${i + 1}`]"
-      v-html="line"
-    />
-  </component>
+    <component :is="element">
+        <span
+            v-for="(line, i) in lines"
+            :key="i"
+            :class="['line', `line-${i + 1}`]"
+            v-html="line"
+        />
+    </component>
 </template>
 
 <script>
 export default {
-  props: {
-    text: {
-      type: String,
-      default: ""
+    props: {
+        text: {
+            type: String,
+            default: ""
+        },
+        separator: {
+            type: String,
+            default: " &#8211; "
+        },
+        element: {
+            type: String,
+            default: "span"
+        }
     },
-    separator: {
-      type: String,
-      default: " &#8211; "
-    },
-    element: {
-      type: String,
-      default: "span"
+    computed: {
+        lines() {
+            return this.text.split(this.separator)
+        }
     }
-  },
-  computed: {
-    lines() {
-      return this.text.split(this.separator);
-    }
-  }
-};
+}
 </script>
