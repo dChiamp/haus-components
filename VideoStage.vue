@@ -26,7 +26,7 @@
 <script>
 import Vue from "vue"
 import Player from "@vimeo/player"
-import { cover, contain } from "intrinsic-scale"
+import { contain } from "intrinsic-scale"
 
 export default {
     props: {
@@ -75,9 +75,11 @@ export default {
             ]
         },
         iframeStyles() {
-            return {
-                height: `${this.styleHeight}px`,
-                width: `${this.styleWidth}px`
+            if (this.styleHeight || this.styleWidth) {
+                return {
+                    height: `${this.styleHeight}px`,
+                    width: `${this.styleWidth}px`
+                }
             }
         },
         isIframe() {
@@ -171,7 +173,7 @@ export default {
                 return false
             }
 
-            // Total height of all slot elements (only if auto is true)
+            // Total height of all slot elements (so we can leave space around the video for them)
             heightOffset = Object.keys(this.$slots).reduce((acc, key) => {
                 const slotItems = this.$slots[key] || []
                 const slotHeight = slotItems.reduce((acc, item) => {
