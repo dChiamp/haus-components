@@ -24,13 +24,15 @@ export default {
     },
     computed: {
         htmlTemplate() {
-            return (
-                sanitizeHtml(this.html, {
+            let output = ""
+            if (this.html) {
+                output = sanitizeHtml(this.html, {
                     allowedTags: false,
                     allowedAttributes: false,
                     allowedIframeHostnames: false
-                }) || ""
-            )
+                })
+            }
+            return output
         }
     },
     watch: {
