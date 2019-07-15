@@ -36,16 +36,16 @@ export default {
     },
     computed: {
         classes() {
-            return ["wp-menu", `location-${_kebabCase(this.locationName)}`]
+            return ["wp-menu", `location-${_kebabCase(this.location)}`]
         },
         menuItems() {
             let items = this.items
 
             // Use menu from store if name provided
-            if (this.locationName) {
+            if (this.location) {
                 items = _get(
                     this,
-                    `$store.state.menus.locations.${this.locationName}`,
+                    `$store.state.menus.locations.${this.location}`,
                     []
                 )
             }
