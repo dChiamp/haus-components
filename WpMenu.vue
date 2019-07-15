@@ -21,7 +21,7 @@ import _get from "lodash/get"
 
 export default {
     props: {
-        locationName: {
+        location: {
             type: String,
             default: ""
         },
