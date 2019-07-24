@@ -22,7 +22,7 @@
                 :autoplay="autoplay"
                 :muted="muted"
                 :playsinline="playsinline"
-                @loadeddata="setLoaded('video')"
+                @progress="setLoaded('video')"
             />
         </div>
         <slot />
