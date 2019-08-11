@@ -6,11 +6,14 @@
         >
             <img
                 v-if="parsedSrc"
+                ref="img"
                 class="media image"
                 :src="parsedSrc"
                 :style="mediaStyles"
                 @load="setLoaded('image')"
+                @error="setLoaded('image') + setError('image')"
             >
+
             <video
                 v-if="parsedVideoUrl"
                 ref="video"
@@ -23,6 +26,7 @@
                 :muted="muted"
                 :playsinline="playsinline"
                 @progress="setLoaded('video')"
+                @error="setLoaded('video') + setError('video')"
             />
         </div>
         <slot />
@@ -48,6 +52,14 @@ export default {
             default: null
         },
         src: {
+            type: String,
+            default: ""
+        },
+        srcSet: {
+            type: String,
+            default: ""
+        },
+        sizes: {
             type: String,
             default: ""
         },
@@ -92,7 +104,8 @@ export default {
         return {
             loadedStatus: {
                 booted: false
-            }
+            },
+            errorStatus: {}
         }
     },
     computed: {
@@ -101,7 +114,8 @@ export default {
                 "responsive-image",
                 `mode-${this.mode}`,
                 { "has-loaded": this.hasLoaded },
-                { "has-background-color": this.backgroundColor }
+                { "has-background-color": this.parsedColor },
+                { "has-error": this.hasError }
             ]
         },
         aspectPadding() {
@@ -126,9 +140,16 @@ export default {
         parsedSrc() {
             return this.src || this.image.sourceUrl
         },
+        parsedSrcSet() {
+            return this.srcSet || this.image.srcSet
+        },
+        parsedSizes() {
+            return this.sizes || this.image.sizes
+        },
         parsedColor() {
             return (
-                this.color || _get(this, "image.acfImageMeta.primaryColor", "")
+                this.backgroundColor ||
+                _get(this, "image.acfImageMeta.primaryColor", "")
             )
         },
         parsedVideoUrl() {
@@ -159,29 +180,38 @@ export default {
         hasLoaded() {
             // Check if all are true. To handle if we have a video and an image.
             return Object.values(this.loadedStatus).every(Boolean)
+        },
+        hasError() {
+            return Object.values(this.errorStatus).every(Boolean)
         }
     },
     watch: {
         // Update loaded state if new src set
-        parsedVideoUrl(newVal, oldVal) {
+        parsedVideoUrl(newVal) {
             if (newVal) {
                 Vue.set(this.loadedStatus, "video", false)
+                Vue.set(this.errorStatus, "video", false)
             }
         },
         // Update loaded state if new src set
-        parsedSrc(newVal, oldVal) {
+        parsedSrc(newVal) {
             if (newVal) {
                 Vue.set(this.loadedStatus, "image", false)
+                Vue.set(this.errorStatus, "image", false)
             }
         }
     },
     mounted() {
         // Setup loaded state tracking
         if (this.parsedVideoUrl) {
-            Vue.set(this.loadedStatus, "video", false)
+            Vue.set(
+                this.loadedStatus,
+                "video",
+                this.$refs.video.readyState >= 3
+            )
         }
         if (this.parsedSrc) {
-            Vue.set(this.loadedStatus, "image", false)
+            Vue.set(this.loadedStatus, "image", this.$refs.img.complete)
         }
 
         // Set the booted flag
@@ -190,6 +220,10 @@ export default {
     methods: {
         setLoaded(type) {
             Vue.set(this.loadedStatus, type, true)
+        },
+        setError(type) {
+            Vue.set(this.loadedStatus, type, true)
+            this.$emit(`error-${type}`)
         },
         play() {
             // HTML5 video methods
