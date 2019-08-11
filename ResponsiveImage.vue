@@ -11,7 +11,7 @@
                 :src="parsedSrc"
                 :style="mediaStyles"
                 @load="setLoaded('image')"
-                @error="setLoaded('image') + setError('image')"
+                @error="setError('image')"
             >
 
             <video
@@ -26,7 +26,7 @@
                 :muted="muted"
                 :playsinline="playsinline"
                 @progress="setLoaded('video')"
-                @error="setLoaded('video') + setError('video')"
+                @error="setError('video')"
             />
         </div>
         <slot />
@@ -115,7 +115,9 @@ export default {
                 `mode-${this.mode}`,
                 { "has-loaded": this.hasLoaded },
                 { "has-background-color": this.parsedColor },
-                { "has-error": this.hasError }
+                { "has-error": this.hasError },
+                { "has-image-error": this.hasError.image },
+                { "has-video-error": this.hasError.video }
             ]
         },
         aspectPadding() {
@@ -220,9 +222,10 @@ export default {
     methods: {
         setLoaded(type) {
             Vue.set(this.loadedStatus, type, true)
+            this.$emit(`loaded-${type}`)
         },
         setError(type) {
-            Vue.set(this.loadedStatus, type, true)
+            Vue.set(this.errorStatus, type, true)
             this.$emit(`error-${type}`)
         },
         play() {
@@ -276,6 +279,11 @@ export default {
 
     // Loaded state
     &.has-loaded .media {
+        opacity: 1;
+    }
+
+    // Error state (also show media, so don't get blank block)
+    &.has-error .media {
         opacity: 1;
     }
 }
