@@ -282,9 +282,17 @@ export default {
         opacity: 1;
     }
 
-    // Error state (also show media, so don't get blank block)
-    &.has-error .media {
-        opacity: 1;
+    // Error state (only show the media that is working)
+    &.has-error {
+        .media {
+            opacity: 1;
+        }
+        &.has-image-error .image {
+            opacity: 0;
+        }
+        &.has-video-error .video {
+            opacity: 0;
+        }
     }
 }
 </style>
