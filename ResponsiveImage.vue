@@ -57,7 +57,7 @@ export default {
             type: String,
             default: ""
         },
-        srcSet: {
+        srcset: {
             type: String,
             default: ""
         },
@@ -145,7 +145,7 @@ export default {
             return this.src || this.image.sourceUrl
         },
         parsedSrcset() {
-            return this.srcSet || this.image.srcSet
+            return this.srcset || this.image.srcSet
         },
         parsedSizes() {
             return this.sizes || this.image.sizes
