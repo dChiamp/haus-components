@@ -9,6 +9,8 @@
                 ref="img"
                 class="media image"
                 :src="parsedSrc"
+                :srcset="parsedSrcset"
+                :sizes="parsedSizes"
                 :style="mediaStyles"
                 @load="setLoaded('image')"
                 @error="setError('image')"
@@ -142,7 +144,7 @@ export default {
         parsedSrc() {
             return this.src || this.image.sourceUrl
         },
-        parsedSrcSet() {
+        parsedSrcset() {
             return this.srcSet || this.image.srcSet
         },
         parsedSizes() {
