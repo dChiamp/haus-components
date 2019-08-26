@@ -107,7 +107,10 @@ export default {
             loadedStatus: {
                 booted: false
             },
-            errorStatus: {}
+            errorStatus: {
+                image: false,
+                video: false
+            }
         }
     },
     computed: {
