@@ -1,9 +1,6 @@
 <template>
     <div :class="classes">
-        <div
-            class="sizer"
-            :style="sizerStyles"
-        >
+        <div class="sizer" :style="sizerStyles">
             <img
                 v-if="parsedSrc"
                 ref="img"
@@ -14,7 +11,7 @@
                 :style="mediaStyles"
                 @load="setLoaded('image')"
                 @error="setError('image')"
-            >
+            />
 
             <video
                 v-if="parsedVideoUrl"
@@ -100,7 +97,14 @@ export default {
         playsinline: {
             type: Boolean,
             default: true
-        }
+        },
+        focalPoint: {
+            type: Object,
+            default: () => {
+                x: "",
+                y: ""
+            }
+        },
     },
     data() {
         return {
@@ -164,6 +168,12 @@ export default {
                 this.videoUrl || _get(this, "image.acfImageMeta.videoUrl", "")
             )
         },
+        parsedFocalPoint() {
+            return {
+                x: this.focalPoint.x || _get(this.image, "acfImageMeta.focalPointX", ""),
+                y: this.focalPoint.y || _get(this.image, "acfImageMeta.focalPointY", "")
+            }
+        },
         sizerStyles() {
             let styles = {}
 
@@ -180,9 +190,15 @@ export default {
             return styles
         },
         mediaStyles() {
-            return {
+            let styles = {
                 objectFit: this.objectFit
             }
+
+            if (this.parsedFocalPoint.x !== "" && this.parsedFocalPoint.y !== "") {
+                styles.objectPosition = `${this.parsedFocalPoint.x}% ${this.parsedFocalPoint.y}%`
+            }
+
+            return styles
         },
         hasLoaded() {
             // Check if all are true. To handle if we have a video and an image.
