@@ -29,7 +29,10 @@ export default {
                 output = sanitizeHtml(this.html, {
                     allowedTags: false,
                     allowedAttributes: false,
-                    allowedIframeHostnames: false
+                    allowedIframeHostnames: false,
+                    exclusiveFilter(frame) {
+                        return !frame.text.trim()
+                    }
                 })
             }
             return output
