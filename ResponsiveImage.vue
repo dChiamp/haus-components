@@ -100,7 +100,7 @@ export default {
         },
         focalPoint: {
             type: Object,
-            default: () => {
+            default: {
                 x: "",
                 y: ""
             }
