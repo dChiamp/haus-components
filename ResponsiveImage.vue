@@ -1,6 +1,9 @@
 <template>
     <div :class="classes">
-        <div class="sizer" :style="sizerStyles">
+        <div
+            class="sizer"
+            :style="sizerStyles"
+        >
             <img
                 v-if="parsedSrc"
                 ref="img"
@@ -11,7 +14,7 @@
                 :style="mediaStyles"
                 @load="setLoaded('image')"
                 @error="setError('image')"
-            />
+            >
 
             <video
                 v-if="parsedVideoUrl"
@@ -100,11 +103,8 @@ export default {
         },
         focalPoint: {
             type: Object,
-            default: () => {
-                x: "",
-                y: ""
-            }
-        },
+            default: () => {}
+        }
     },
     data() {
         return {
@@ -170,8 +170,12 @@ export default {
         },
         parsedFocalPoint() {
             return {
-                x: this.focalPoint.x || _get(this.image, "acfImageMeta.focalPointX", ""),
-                y: this.focalPoint.y || _get(this.image, "acfImageMeta.focalPointY", "")
+                x:
+                    _get(this, "focalPoint.x", false) ||
+                    _get(this.image, "acfImageMeta.focalPointX", ""),
+                y:
+                    _get(this, "focalPoint.y", false) ||
+                    _get(this.image, "acfImageMeta.focalPointY", "")
             }
         },
         sizerStyles() {
@@ -194,7 +198,10 @@ export default {
                 objectFit: this.objectFit
             }
 
-            if (this.parsedFocalPoint.x !== "" && this.parsedFocalPoint.y !== "") {
+            if (
+                this.parsedFocalPoint.x !== "" &&
+                this.parsedFocalPoint.y !== ""
+            ) {
                 styles.objectPosition = `${this.parsedFocalPoint.x}% ${this.parsedFocalPoint.y}%`
             }
 
