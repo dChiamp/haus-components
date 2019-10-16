@@ -31,7 +31,7 @@ export default {
                     allowedAttributes: false,
                     allowedIframeHostnames: false,
                     exclusiveFilter(frame) {
-                        return !frame.text.trim()
+                        return frame.tag === "p" && !frame.text.trim()
                     }
                 })
             }
