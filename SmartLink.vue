@@ -27,7 +27,6 @@
 
 <script>
 import _get from "lodash/get"
-
 export default {
     props: {
         to: {
@@ -53,23 +52,25 @@ export default {
             )
         },
         isInternal() {
+            // wp-content in url means probably a download link, so open in new window
+            if (this.to.includes("wp-content")) {
+                return false
+            }
+
             return this.to.includes(this.apiUrl)
         },
         isRelative() {
             let result = false
-
             switch (true) {
                 case this.target == "_blank":
                     // If open in new window, then render an a-tag
                     result = false
                     break
-
                 case this.to && String(this.to).indexOf(".") === 0:
                 case this.to && String(this.to).indexOf("/") === 0:
                     // return true if we start with a slash
                     result = true
             }
-
             return result
         },
         parsedTo() {
