@@ -29,7 +29,10 @@ export default {
                 output = sanitizeHtml(this.html, {
                     allowedTags: false,
                     allowedAttributes: false,
-                    allowedIframeHostnames: false
+                    allowedIframeHostnames: false,
+                    exclusiveFilter(frame) {
+                        return frame.tag === "p" && !frame.text.trim()
+                    }
                 })
             }
             return output
@@ -63,10 +66,12 @@ export default {
             // This will unwrap all elements selected from it's parent
             Array.from(this.$el.querySelectorAll(selector)).forEach(el => {
                 let elParentNode = el.parentNode
-
                 if (elParentNode !== document.body) {
                     elParentNode.parentNode.insertBefore(el, elParentNode)
-                    elParentNode.parentNode.removeChild(elParentNode)
+
+                    if (!elParentNode.parentNode.innerHTML) {
+                        elParentNode.parentNode.removeChild(elParentNode)
+                    }
                 }
             })
         },

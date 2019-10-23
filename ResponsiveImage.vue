@@ -1,6 +1,9 @@
 <template>
     <div :class="classes">
-        <div class="sizer" :style="sizerStyles">
+        <div
+            class="sizer"
+            :style="sizerStyles"
+        >
             <img
                 v-if="parsedSrc"
                 ref="img"
@@ -9,10 +12,10 @@
                 :srcset="parsedSrcset"
                 :sizes="parsedSizes"
                 :style="mediaStyles"
+                :alt="parsedAlt"
                 @load="setLoaded('image')"
                 @error="setError('image')"
-                :alt="parsedAlt"
-            />
+            >
 
             <video
                 v-if="parsedVideoUrl"
@@ -105,11 +108,8 @@ export default {
         },
         focalPoint: {
             type: Object,
-            default: () => {
-                x: "",
-                y: ""
-            }
-        },
+            default: () => {}
+        }
     },
     data() {
         return {
@@ -175,12 +175,20 @@ export default {
         },
         parsedFocalPoint() {
             return {
-                x: this.focalPoint.x || _get(this.image, "acfImageMeta.focalPointX", ""),
-                y: this.focalPoint.y || _get(this.image, "acfImageMeta.focalPointY", "")
+                x:
+                    _get(this, "focalPoint.x", false) ||
+                    _get(this.image, "acfImageMeta.focalPointX", ""),
+                y:
+                    _get(this, "focalPoint.y", false) ||
+                    _get(this.image, "acfImageMeta.focalPointY", "")
             }
         },
         parsedAlt() {
-            return this.alt || _get(this, "image.caption", "") || _get(this, "image.description", "")
+            return (
+                this.alt ||
+                _get(this, "image.caption", "") ||
+                _get(this, "image.description", "")
+            )
         },
         sizerStyles() {
             let styles = {}
@@ -202,7 +210,10 @@ export default {
                 objectFit: this.objectFit
             }
 
-            if (this.parsedFocalPoint.x !== "" && this.parsedFocalPoint.y !== "") {
+            if (
+                this.parsedFocalPoint.x !== "" &&
+                this.parsedFocalPoint.y !== ""
+            ) {
                 styles.objectPosition = `${this.parsedFocalPoint.x}% ${this.parsedFocalPoint.y}%`
             }
 
