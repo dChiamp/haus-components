@@ -11,6 +11,7 @@
                 :style="mediaStyles"
                 @load="setLoaded('image')"
                 @error="setError('image')"
+                :alt="parsedAlt"
             />
 
             <video
@@ -55,6 +56,10 @@ export default {
             default: ""
         },
         srcset: {
+            type: String,
+            default: ""
+        },
+        alt: {
             type: String,
             default: ""
         },
@@ -173,6 +178,9 @@ export default {
                 x: this.focalPoint.x || _get(this.image, "acfImageMeta.focalPointX", ""),
                 y: this.focalPoint.y || _get(this.image, "acfImageMeta.focalPointY", "")
             }
+        },
+        parsedAlt() {
+            return this.alt || _get(this, "image.caption", "") || _get(this, "image.description", "")
         },
         sizerStyles() {
             let styles = {}

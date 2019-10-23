@@ -3,7 +3,13 @@
         ref="stage"
         :class="classes"
     >
-        <slot name="top" />
+        <div
+            v-if="$slots.top"
+            ref="top"
+            class="slot-top"
+        >
+            <slot name="top" />
+        </div>
 
         <iframe
             ref="iframe"
@@ -19,7 +25,13 @@
             :style="iframeStyles"
         />
 
-        <slot name="bottom" />
+        <div
+            v-if="$slots.bottom"
+            ref="bottom"
+            class="slot-bottom"
+        >
+            <slot name="bottom" />
+        </div>
     </div>
 </template>
 
@@ -27,6 +39,7 @@
 import Vue from "vue"
 import Player from "@vimeo/player"
 import { contain } from "intrinsic-scale"
+import _compact from "lodash/compact"
 
 export default {
     props: {
@@ -173,15 +186,17 @@ export default {
                 return false
             }
 
-            // Total height of all slot elements (so we can leave space around the video for them)
-            heightOffset = Object.keys(this.$slots).reduce((acc, key) => {
-                const slotItems = this.$slots[key] || []
-                const slotHeight = slotItems.reduce((acc, item) => {
-                    const rect = item.elm.getBoundingClientRect()
-                    const height = rect.height || 0
-                    return acc + height
-                }, 0)
-                return slotHeight
+            // Measure each slot height
+            let slots = _compact([
+                this.$refs.top || false,
+                this.$refs.bottom || false
+            ])
+
+            heightOffset = slots.reduce((acc, slot) => {
+                // Now we are in each slot
+                const rect = slot.getBoundingClientRect()
+                const height = rect.height || 0
+                return acc + height
             }, 0)
 
             // Figure out "contain" height and set it on video
