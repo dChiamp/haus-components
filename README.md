@@ -15,6 +15,10 @@ Reusable components and directives for Vue. Designed for [Stackhaus](https://git
     1.  [split-text](#wp-content)
     1.  [wp-menu](#wp-menu)
 
+## Video Stage
+
+If use slots with video stage, you'll probably want to set it's mode prop to be `fit-to-parent`. If you do this, be aware of the markup that video-stage wraps around the slot. It's uses this markup to figure out the height of the elements in the slot. Often times using `position: absolute` will mean the slot has `height: 0`, so be aware that the iFrame will be sized bigger than you want if you do that.
+
 ## TODO list
 
 TODO improvements:
