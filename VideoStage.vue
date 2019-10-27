@@ -141,6 +141,7 @@ export default {
             })
 
             // Set Attributes
+            // TODO Make this use Promise.all()
             await this.player.getVideoWidth().then(width => {
                 this.width = width
             })
@@ -210,6 +211,12 @@ export default {
             // Set style heights
             this.styleHeight = height
             this.styleWidth = width
+        },
+        play() {
+            this.player.play()
+        },
+        pause() {
+            this.player.pause()
         }
     }
 }
