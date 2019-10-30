@@ -20,7 +20,7 @@
             frameborder="0"
             allow="autoplay; fullscreen"
             allowfullscreen
-            :playsinline="playsinline"
+            :playsinline="false"
             :title="title"
             :style="iframeStyles"
         />
@@ -140,30 +140,28 @@ export default {
                 playsinline: this.playsinline
             })
 
-            // Set Attributes
-            // TODO Make this use Promise.all()
-            await this.player.getVideoWidth().then(width => {
-                this.width = width
-            })
-            await this.player.getVideoHeight().then(height => {
-                this.height = height
-            })
-            await this.player.getVideoTitle().then(title => {
-                this.title = title
-            })
+            // Get and set player size and title
+            const meta = await Promise.all([
+                this.player.getVideoWidth(),
+                this.player.getVideoHeight(),
+                this.player.getVideoTitle()
+            ])
+            this.width = meta[0]
+            this.height = meta[1]
+            this.title = meta[2]
+            this.sizeVideo()
 
             // Size, set events and loaded state
-            await this.player.ready().then(() => {
-                Vue.nextTick(this.sizeVideo)
+            await this.player.ready()
+            this.sizeVideo()
 
-                // Set events
-                this.player.on("play", this.onPlay)
-                this.player.on("pause", this.onPause)
-                this.player.on("ended", this.onEnded)
+            // Set events
+            this.player.on("play", this.onPlay)
+            this.player.on("pause", this.onPause)
+            this.player.on("ended", this.onEnded)
 
-                this.hasLoaded = true
-                this.$emit("has-loaded")
-            })
+            this.hasLoaded = true
+            this.$emit("has-loaded")
         },
         destroyVimeoPlayer() {
             // Remove events
@@ -173,7 +171,9 @@ export default {
                 this.player.off("ended", this.onEnded)
             }
         },
-        sizeVideo() {
+        async sizeVideo() {
+            await this.$nextTick()
+
             // Abort if mode not "fit-to-parent"
             if (this.mode !== "fit-to-parent") {
                 return false
@@ -211,12 +211,12 @@ export default {
             // Set style heights
             this.styleHeight = height
             this.styleWidth = width
-        },
-        play() {
-            this.player.play()
-        },
-        pause() {
-            this.player.pause()
+
+            // Emit dimensions event
+            this.$emit("resized", {
+                width: width,
+                height: height
+            })
         }
     }
 }
