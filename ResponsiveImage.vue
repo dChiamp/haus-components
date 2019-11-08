@@ -130,8 +130,8 @@ export default {
                 { "has-loaded": this.hasLoaded },
                 { "has-background-color": this.parsedColor },
                 { "has-error": this.hasError },
-                { "has-image-error": this.hasError.image },
-                { "has-video-error": this.hasError.video }
+                { "has-image-error": this.errorStatus.image },
+                { "has-video-error": this.errorStatus.video }
             ]
         },
         aspectPadding() {
