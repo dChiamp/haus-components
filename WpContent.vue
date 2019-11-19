@@ -19,7 +19,11 @@ export default {
         },
         unwrap: {
             type: String,
-            default: "p > iframe, p > img.alignnone"
+            default: "p > iframe, p > img.alignnone, p > .shortcode"
+        },
+        remove: {
+            type: String,
+            default: "p:empty"
         }
     },
     computed: {
@@ -29,10 +33,7 @@ export default {
                 output = sanitizeHtml(this.html, {
                     allowedTags: false,
                     allowedAttributes: false,
-                    allowedIframeHostnames: false,
-                    exclusiveFilter(frame) {
-                        return frame.tag === "p" && !frame.text.trim()
-                    }
+                    allowedIframeHostnames: false
                 })
             }
             return output
@@ -41,12 +42,16 @@ export default {
     watch: {
         htmlTemplate() {
             this.unwrapElements(this.unwrap)
+            this.removeElements(this.remove)
             this.initFitVids()
         }
     },
     mounted() {
         // Unwwrap elements
         this.unwrapElements(this.unwrap)
+
+        // Delete elments
+        this.removeElements(this.remove)
 
         // Start FitVids
         this.initFitVids()
@@ -73,6 +78,12 @@ export default {
                         elParentNode.parentNode.removeChild(elParentNode)
                     }
                 }
+            })
+        },
+        removeElements(selector) {
+            Array.from(this.$el.querySelectorAll(selector)).forEach(el => {
+                let elParentNode = el.parentNode
+                elParentNode.removeChild(el)
             })
         },
         initFitVids() {
