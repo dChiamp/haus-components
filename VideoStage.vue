@@ -26,11 +26,11 @@
         />
 
         <div
-            v-if="$slots.bottom"
+            v-if="$slots.default"
             ref="bottom"
             class="slot-bottom"
         >
-            <slot name="bottom" />
+            <slot />
         </div>
     </div>
 </template>
@@ -203,7 +203,7 @@ export default {
             // Figure out "contain" height and set it on video
             let { width, height, x, y } = contain(
                 $stage.offsetWidth,
-                $stage.offsetHeight + heightOffset,
+                $stage.offsetHeight - heightOffset,
                 this.width,
                 this.height
             )
@@ -228,6 +228,7 @@ export default {
 
     .iframe {
         opacity: 0;
+        display: block;
         transition: opacity 0.4s ease-in-out;
     }
 
