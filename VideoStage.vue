@@ -6,7 +6,7 @@
         <div
             v-if="$slots.top"
             ref="top"
-            class="slot-top"
+            class="slot slot-top"
         >
             <slot name="top" />
         </div>
@@ -28,7 +28,7 @@
         <div
             v-if="$slots.default"
             ref="bottom"
-            class="slot-bottom"
+            class="slot slot-bottom"
         >
             <slot />
         </div>
@@ -230,6 +230,9 @@ export default {
         opacity: 0;
         display: block;
         transition: opacity 0.4s ease-in-out;
+    }
+    .slot {
+        overflow: hidden;
     }
 
     // Loaded state
