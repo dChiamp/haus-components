@@ -17,7 +17,7 @@ Reusable components and directives for Vue. Designed for [Stackhaus](https://git
 
 ## Video Stage
 
-If use slots with video stage, you'll probably want to set it's mode prop to be `fit-to-parent`. If you do this, be aware of the markup that video-stage wraps around the slot. It's uses this markup to figure out the height of the elements in the slot. Often times using `position: absolute` will mean the slot has `height: 0`, so be aware that the iFrame will be sized bigger than you want if you do that.
+If use slots with video stage, you'll probably want to set it's mode prop to be `fit-to-parent`. If you do this, be aware of the markup that video-stage wraps around the slot. It's uses this markup to figure out the height of the elements in the slot. Often times using `position: absolute` will mean the slot has `height: 0`, so be aware that the iFrame will be sized bigger than you want if you do that. Same with adding a margin to things in the slots, it will work better with paddings.
 
 ## Carousel Scrolljack
 
