@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { createUUID } from "~/utils/tools"
-
 export default {
     props: {
         text: {
