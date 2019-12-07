@@ -43,13 +43,8 @@ export default {
         }
     },
     computed: {
-        apiUrl() {
-            return (
-                // I have both these URLs for backwards compatibility. Could remove second one soon.
-                this.$store.state.siteMeta.apiUrl ||
-                this.$store.state.apiUrl ||
-                ""
-            )
+         frontendUrl() {
+            return this.$store.state.siteMeta.frontendUrl || ""
         },
         isInternal() {
             // wp-content in url means probably a download link, so open in new window
@@ -57,7 +52,7 @@ export default {
                 return false
             }
 
-            return this.to.includes(this.apiUrl)
+            return this.to.includes(this.frontendUrl)
         },
         isRelative() {
             let result = false
@@ -74,8 +69,19 @@ export default {
             return result
         },
         parsedTo() {
-            let host = _get(this, "$store.state.siteMeta.host", "")
-            return this.to.replace(this.apiUrl, "").replace(host, "")
+            let url = this.to
+
+            // Replace all these things
+            const replaceThese = [
+                _get(this, "$store.state.siteMeta.frontendUrl", ""),
+                _get(this, "$store.state.siteMeta.backendUrl", ""),
+                _get(this, "$store.state.siteMeta.host", "")
+            ]
+            replaceThese.forEach(element => {
+                url = url.replace(element, "")
+            })
+            
+            return `/${url}`
         }
     }
 }

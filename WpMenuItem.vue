@@ -67,7 +67,19 @@ export default {
             return this.item.target !== "_blank"
         },
         relativeUrl() {
-            return this.item.url.replace(this.$store.state.siteMeta.apiUrl, "")
+            let url = this.item.url
+
+            // Replace all these things
+            const replaceThese = [
+                _get(this, "$store.state.siteMeta.frontendUrl", ""),
+                _get(this, "$store.state.siteMeta.backendUrl", ""),
+                _get(this, "$store.state.siteMeta.host", "")
+            ]
+            replaceThese.forEach(element => {
+                url = url.replace(element, "")
+            })
+
+            return url
         },
         getPath() {
             return `${this.prependPaths}${this.relativeUrl}`
