@@ -29,6 +29,26 @@ Be aware anything that you put into the `default` slot cannot be higher than 100
 
 It's possible to tweak this code to make it work when at the top or middle, but Drew will update this when that is actually needed.
 
+## IntersectionObserver and InView directives
+
+Both these directives operate similarly. You should use `v-intersection-observer` if you don't need precision, like for a grid that animates in each block. You should only use `v-in-view` for things that need to be very precise, like something that is supposed to pin to a specific part of the screen on scroll.
+
+Both directives have a `once` modifier, so `v-in-view.once` or `v-intersection-observer.once` will only run once, which is good for animating in something on scroll. Both auto add classes when in and out of view.
+
+### v-in-view
+`v-in-view` emits `in-view` and `out-view` events, and toggles `in-view` as a class.
+
+Takes an `offset` and `throttle` setting as an object-literals, like `v-in-view="{offset: 0, throttle: 30}"`. `offset` is can be used to make the "in-view" events happen early or late. `throttle` is the amount of milliseconds to throttle the in-view detection. A lower number will mean higher precision, but less performance.
+
+### v-intersection-observer
+`v-intersection-observer` emits a `has-intersected` event, that contains a [IntersectionObserverEntry](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry) object as payload that contains a lot of useful data.
+
+Often you'll want to check that event payload for `event.isIntersecting` to see if the element has come into view, or has left view. `event.intersectionRatio` and `event.boundingClientRect` are useful to see how much the element has come into view.
+
+Takes an object for setting as an object-literal, like `v-intersection-observer="rootMargin: '0px', threshold: 1.0}"`. See [this for an explanation on those settings](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
+
+[It is important to read this](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to understand the options for intersection observers, the way `rootMargin` works is important to understand (often times you'll want this to be `-100px -100px --100px -100px` for example, or to change threshold). You can also set `root` if the default of document root isn't what you want.
+
 ## TODO list
 
 TODO improvements:

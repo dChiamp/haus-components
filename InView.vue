@@ -2,20 +2,37 @@
 import _throttle from "lodash/throttle"
 
 // Define default settings
+let checker
 let settings = {
     value: {
         offset: 0,
-        once: true,
         throttle: 30
+    },
+    modifiers: {
+        once: false
     }
 }
 
+// Setup stuff
+const initInView = (binding) => {
+    // Save new settings to settings var for convenience
+    Object.assign(settings, binding)
+
+    checker = _throttle(
+        () => checkViewport(el, settings.value.offset, settings.modifiers.once),
+        settings.value.throttle
+    )
+
+    window.addEventListener("scroll", checker)
+    window.addEventListener("resize", checker)
+}
+
 // This function runs on scroll and resize, it checks if an element is in view
-const checkViewport = (el, offset, fireOnce) => {
+const checkViewport = (el, offset, once) => {
     const hasClass = el.classList.contains("in-view")
 
-    // If fire once and el already has class we have nothing to do
-    if (fireOnce && hasClass) return
+    // If once and el already has class we have nothing to do
+    if (once && hasClass) return
 
     const boundingRect = el.getBoundingClientRect()
 
@@ -41,26 +58,30 @@ const checkViewport = (el, offset, fireOnce) => {
     }
 }
 
+// Cleanup events
+const destroyInView = () => {
+    window.removeEventListener("scroll", checker)
+    window.removeEventListener("resize", checker)
+}
+
 // The Vue directive config
 export default {
     bind(el, binding) {
-        // Save new settings to settings var for convenience
-        Object.assign(settings, binding)
-
-        el.checkViewport = _throttle(
-            () => checkViewport(el, settings.value.offset, settings.value.once),
-            settings.value.throttle
-        )
-
-        window.addEventListener("scroll", el.checkViewport)
-        window.addEventListener("resize", el.checkViewport)
+        initInView(binding)
     },
     unbind(el) {
-        window.removeEventListener("scroll", el.checkViewport)
-        window.removeEventListener("resize", el.checkViewport)
+        destroyInView()
+    },
+    update(el, binding) {
+        // If a setting has changed, restart
+        if(binding.oldValue !== binding.value) {
+            destroyInView()
+            initInView(binding)
+        }
     },
     inserted(el) {
-        checkViewport(el, settings.value.offset, settings.value.once)
+        // Check if in view now that element is ready
+        checkViewport(el, settings.value.offset, settings.modifiers.once)
     }
 }
 </script>
