@@ -1,8 +1,18 @@
 <script>
 import _throttle from "lodash/throttle"
 
+// Define default settings
+let settings = {
+    value: {
+        offset: 0,
+        once: true
+    }
+}
+
+// This function runs on scroll and resize, it checks if an element is in view
 const checkViewport = (el, offset, fireOnce) => {
     const hasClass = el.classList.contains("in-view")
+
     // If fire once and el already has class we have nothing to do
     if (fireOnce && hasClass) return
 
@@ -20,6 +30,7 @@ const checkViewport = (el, offset, fireOnce) => {
             el.dispatchEvent(event)
         }
     }
+
     //Out of view
     else if (hasClass) {
         // Create and dispatch event
@@ -29,16 +40,10 @@ const checkViewport = (el, offset, fireOnce) => {
     }
 }
 
-let settings = {
-    value: {
-        offset: 0,
-        once: true
-    }
-}
-
+// The Vue directive config
 export default {
     bind(el, binding) {
-        // Save new settings
+        // Save new settings to settings var for convenience
         Object.assign(settings, binding)
 
         el.checkViewport = _throttle(

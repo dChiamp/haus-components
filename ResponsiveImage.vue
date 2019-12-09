@@ -244,7 +244,7 @@ export default {
         }
     },
     mounted() {
-        // Setup loaded state tracking
+        // Check if media is already loaded (like if loaded from cache)
         if (this.parsedVideoUrl) {
             Vue.set(
                 this.loadedStatus,
