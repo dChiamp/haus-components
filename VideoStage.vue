@@ -23,6 +23,7 @@
             :playsinline="false"
             :title="title"
             :style="iframeStyles"
+            loading="lazy"
         />
 
         <div

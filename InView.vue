@@ -5,7 +5,8 @@ import _throttle from "lodash/throttle"
 let settings = {
     value: {
         offset: 0,
-        once: true
+        once: true,
+        throttle: 30
     }
 }
 
@@ -48,7 +49,7 @@ export default {
 
         el.checkViewport = _throttle(
             () => checkViewport(el, settings.value.offset, settings.value.once),
-            30
+            settings.value.throttle
         )
 
         window.addEventListener("scroll", el.checkViewport)

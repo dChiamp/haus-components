@@ -15,6 +15,7 @@
                 :alt="parsedAlt"
                 @load="setLoaded('image')"
                 @error="setError('image')"
+                loading="lazy"
             >
 
             <video
