@@ -41,6 +41,8 @@ Both directives have a `once` modifier, so `v-in-view.once` or `v-intersection-o
 Takes an `offset` and `throttle` setting as an object-literals, like `v-in-view="{offset: 0, throttle: 30}"`. `offset` is can be used to make the "in-view" events happen early or late. `throttle` is the amount of milliseconds to throttle the in-view detection. A lower number will mean higher precision, but less performance.
 
 ### v-intersection-observer
+*NOTE You'll want to add this [polyfill](https://www.npmjs.com/package/nuxt-polyfill) package and then add the package and config for [intersection-observer](https://www.npmjs.com/package/intersection-observer)*
+
 `v-intersection-observer` emits a `has-intersected` event, that contains a [IntersectionObserverEntry](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry) object as payload that contains a lot of useful data.
 
 Often you'll want to check that event payload for `event.isIntersecting` to see if the element has come into view, or has left view. `event.intersectionRatio` and `event.boundingClientRect` are useful to see how much the element has come into view.
