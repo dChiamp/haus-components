@@ -81,7 +81,7 @@ export default {
                 url = url.replace(element, "")
             })
             
-            return `/${url}`
+            return url.startsWith("/") ? url : `/${url}`
         }
     }
 }
