@@ -1,39 +1,33 @@
 <script>
 import _throttle from "lodash/throttle"
-
 // Define default settings
 let checker
 let settings = {
     value: {
         offset: 0,
-        throttle: 30
+        throttle: 16
     },
     modifiers: {
         once: false
     }
 }
-
 // Setup stuff
-const initInView = (binding) => {
+const initInView = (el, binding) => {
     // Save new settings to settings var for convenience
     Object.assign(settings, binding)
-
     checker = _throttle(
         () => checkViewport(el, settings.value.offset, settings.modifiers.once),
         settings.value.throttle
     )
-
     window.addEventListener("scroll", checker)
     window.addEventListener("resize", checker)
 }
-
 // This function runs on scroll and resize, it checks if an element is in view
 const checkViewport = (el, offset, once) => {
     const hasClass = el.classList.contains("in-view")
 
     // If once and el already has class we have nothing to do
     if (once && hasClass) return
-
     const boundingRect = el.getBoundingClientRect()
 
     // In view
@@ -48,7 +42,6 @@ const checkViewport = (el, offset, once) => {
             el.dispatchEvent(event)
         }
     }
-
     //Out of view
     else if (hasClass) {
         // Create and dispatch event
@@ -57,26 +50,24 @@ const checkViewport = (el, offset, once) => {
         el.dispatchEvent(event)
     }
 }
-
 // Cleanup events
 const destroyInView = () => {
     window.removeEventListener("scroll", checker)
     window.removeEventListener("resize", checker)
 }
-
 // The Vue directive config
 export default {
     bind(el, binding) {
-        initInView(binding)
+        initInView(el, binding)
     },
     unbind(el) {
         destroyInView()
     },
     update(el, binding) {
         // If a setting has changed, restart
-        if(binding.oldValue !== binding.value) {
+        if (binding.oldValue !== binding.value) {
             destroyInView()
-            initInView(binding)
+            initInView(el, binding)
         }
     },
     inserted(el) {
