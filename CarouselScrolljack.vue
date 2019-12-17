@@ -1,5 +1,9 @@
 <template>
-    <div :class="classes">
+    <div
+        v-in-view
+        :class="classes"
+        @in-view="inView"
+    >
         <div
             ref="panel"
             class="panel"
@@ -41,13 +45,12 @@ export default {
     },
     data() {
         return {
-            observer: null,
-            unWatchScroll: () => {},
             isInView: false,
             translateVal: 0,
             itemsWidth: null,
             panelHeight: null,
-            itemsOffsetY: null
+            itemsOffsetY: null,
+            throttledScroll: null
         }
     },
     computed: {
@@ -63,27 +66,14 @@ export default {
             let styles = {
                 height: `${this.itemsWidth - this.$store.state.winWidth}px`
             }
-
             // Add padding to sizer when in view, to account for the items becoming fixed position.
             if (this.isInView) {
                 styles.paddingTop = `${this.panelHeight}px`
             }
-
             return styles
         }
     },
     watch: {
-        isInView(newVal, oldVal) {
-            // Add a watcher as a function, so we can unwatch when not in view
-            if (newVal) {
-                this.unWatchScroll = this.$watch(
-                    "$store.state.sTop",
-                    this.onScroll
-                )
-            } else {
-                this.unWatchScroll()
-            }
-        },
         "$store.state.winWidth"(newVal, oldVal) {
             this.setHeight()
         },
@@ -93,46 +83,39 @@ export default {
     },
     mounted() {
         this.setHeight()
-        this.initObserver()
+        this.initEvents()
+
+        // Trigger scroll on mounted, just to run all the logic
+        window.scroll()
     },
     destroyed() {
-        this.unWatchScroll()
-        this.observer.disconnect()
+        this.destroyEvents()
     },
     methods: {
-        initObserver() {
-            let options = {
-                rootMargin: "0px",
-                threshold: 1.0
-            }
-            this.observer = new IntersectionObserver(
-                this.onIntersection,
-                options
-            )
-            this.observer.observe(this.$refs.itemsWrapper)
+        initEvents() {
+            window.addEventListener("scroll", this.onScroll)
         },
-        onIntersection(entries, observer) {
-            let entry = entries[0]
-            this.isInView = entry.isIntersecting
+        destroyEvents() {
+            window.removeEventListener("scroll", this.onScroll)
+        },
+        inView(isInView = true) {
+            this.isInView = isInView
         },
         onScroll(e, i) {
             // Abort if not in view
             if (!this.isInView) {
                 return
             }
-
             // Scroll items sideways
             this.translateVal = _clamp(
                 this.$store.state.sTop - this.itemsOffsetY,
                 0,
                 this.itemsWidth
             )
-
             // If going past start, allow scrolling up again
             if (this.translateVal <= 0) {
                 this.isInView = false
             }
-
             // If at end, allow scrolling down again
             if (this.translateVal >= this.itemsWidth) {
                 this.isInView = false
@@ -141,7 +124,6 @@ export default {
         setHeight() {
             this.itemsWidth = this.$refs.items.clientWidth
             this.panelHeight = this.$refs.panel.clientHeight
-
             // Save the sTop of the itemsWrapper on resize, so we are efficient with calling getBoundingClientRect
             // I did it this way because `this.$store.state.sTop` is throttled and would be slightly different always
             const rect = this.$refs.itemsWrapper.getBoundingClientRect()
@@ -164,8 +146,8 @@ export default {
     .items {
         white-space: nowrap;
         width: fit-content;
+        min-width: 100%;
     }
-
     // In view states
     &.in-view .panel {
         position: fixed;

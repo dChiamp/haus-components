@@ -27,6 +27,8 @@ Has a `before`, `default` and `after` slot.
 
 Be aware anything that you put into the `default` slot cannot be higher than 100vh, otherwise it will never count as "in-view". The current version of this is made to work with elements no taller than 80vh generally and will be positioned against the bottom of the window.
 
+Be aware that the elements passed into the slot will need to be sized using a non-percentage based unit (so use vw or vh instead of %).
+
 It's possible to tweak this code to make it work when at the top or middle, but Drew will update this when that is actually needed.
 
 ## IntersectionObserver and InView directives
@@ -36,12 +38,14 @@ Both these directives operate similarly. You should use `v-intersection-observer
 Both directives have a `once` modifier, so `v-in-view.once` or `v-intersection-observer.once` will only run once, which is good for animating in something on scroll. Both auto add classes when in and out of view.
 
 ### v-in-view
+
 `v-in-view` emits `in-view` and `out-view` events, and toggles `in-view` as a class.
 
 Takes an `offset` and `throttle` setting as an object-literals, like `v-in-view="{offset: 0, throttle: 30}"`. `offset` is can be used to make the "in-view" events happen early or late. `throttle` is the amount of milliseconds to throttle the in-view detection. A lower number will mean higher precision, but less performance.
 
 ### v-intersection-observer
-*NOTE You'll want to add this [polyfill](https://www.npmjs.com/package/nuxt-polyfill) package and then add the package and config for [intersection-observer](https://www.npmjs.com/package/intersection-observer)*
+
+_NOTE You'll want to add this [polyfill](https://www.npmjs.com/package/nuxt-polyfill) package and then add the package and config for [intersection-observer](https://www.npmjs.com/package/intersection-observer)_
 
 `v-intersection-observer` emits a `has-intersected` event, that contains a [IntersectionObserverEntry](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry) object as payload that contains a lot of useful data.
 
